@@ -1,5 +1,4 @@
 
-
 import streamlit as st
 from openai import OpenAI
 
@@ -58,41 +57,41 @@ st.markdown("""
             margin-right: auto !important;
         }
 
-/* 🌿 Chat input area (where you type your message) */
-div[data-testid="stChatInputContainer"] {
-    background-color: #f6fff9 !important;
-    border-top: 2px solid #bce8d6 !important;
-    padding: 10px 16px !important;
-}
+        /* 🌿 Chat input area */
+        div[data-testid="stChatInputContainer"] {
+            background-color: #f6fff9 !important;
+            border-top: 2px solid #bce8d6 !important;
+            padding: 10px 16px !important;
+        }
 
-/* 🩵 Actual text input field */
-textarea[data-testid="stChatInputTextArea"] {
-    background-color: #ffffff !important;
-    color: #114b3e !important;
-    border: 1.5px solid #bce8d6 !important;
-    border-radius: 10px !important;
-    font-size: 1rem !important;
-    padding: 10px !important;
-}
+        /* 🩵 Actual text input field */
+        textarea[data-testid="stChatInputTextArea"] {
+            background-color: #ffffff !important;
+            color: #114b3e !important;
+            border: 1.5px solid #bce8d6 !important;
+            border-radius: 10px !important;
+            font-size: 1rem !important;
+            padding: 10px !important;
+        }
 
-/* 🌸 Change placeholder (e.g., "Ask Biovyn...") color */
-textarea[data-testid="stChatInputTextArea"]::placeholder {
-    color: #6b8e7b !important;
-    opacity: 0.8 !important;
-}
+        /* 🌸 Placeholder color */
+        textarea[data-testid="stChatInputTextArea"]::placeholder {
+            color: #6b8e7b !important;
+            opacity: 0.8 !important;
+        }
 
-/* 💚 Optional: make the "Send" button match your theme */
-button[kind="secondaryFormSubmit"] {
-    background-color: #bce8d6 !important;
-    color: #114b3e !important;
-    border-radius: 8px !important;
-    border: none !important;
-    font-weight: 600 !important;
-    transition: 0.2s ease !important;
-}
-button[kind="secondaryFormSubmit"]:hover {
-    background-color: #9bdcc3 !important;
-}
+        /* 💚 Send button styling */
+        button[kind="secondaryFormSubmit"] {
+            background-color: #bce8d6 !important;
+            color: #114b3e !important;
+            border-radius: 8px !important;
+            border: none !important;
+            font-weight: 600 !important;
+            transition: 0.2s ease !important;
+        }
+        button[kind="secondaryFormSubmit"]:hover {
+            background-color: #9bdcc3 !important;
+        }
 
         /* 🌼 Footer */
         footer {visibility: hidden;}
@@ -106,19 +105,18 @@ button[kind="secondaryFormSubmit"]:hover {
     </style>
 """, unsafe_allow_html=True)
 
-
 # --- SETUP ---
-st.set_page_config(page_title="Biobot Chat", page_icon="🤖", layout="centered")    
+st.set_page_config(page_title="Biobot Chat", page_icon="🤖", layout="centered")
 import os
-import streamlit as st
-import openai
 
-# Load the key from Streamlit Secrets (Cloud) or environment variable (local)
-openai.api_key = st.secrets.get("OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
+# ✅ Load key securely from Streamlit secrets or environment variable
+OPENAI_KEY = st.secrets.get("OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
 
-# Optional: handle missing key
-if not openai.api_key:
+if not OPENAI_KEY:
     st.error("⚠️ OpenAI API key not found. Please add it in Streamlit → Settings → Secrets.")
+else:
+    # ✅ Create the OpenAI client safely
+    client = OpenAI(api_key=OPENAI_KEY)
 
 st.markdown("<h1>🌿 Biovyn AI</h1>", unsafe_allow_html=True)
 st.markdown("<h3>Your Intelligent Biology Companion</h3>", unsafe_allow_html=True)
@@ -140,8 +138,9 @@ if prompt := st.chat_input("Ask Biobot something..."):
 
     with st.chat_message("assistant"):
         with st.spinner("Thinking like a biologist 🧬..."):
+            # ✅ Now 'client' exists, no NameError!
             response = client.chat.completions.create(
-                model="gpt-4o-mini",  # you can also try gpt-4 or gpt-4-turbo
+                model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": "You are Biobot, a kind, smart biology tutor for students. Explain clearly and naturally."},
                     *st.session_state.messages,
@@ -153,13 +152,14 @@ if prompt := st.chat_input("Ask Biobot something..."):
 
     st.session_state.messages.append({"role": "assistant", "content": reply})
 
-
+# --- CLEAR CHAT BUTTON ---
 if st.button("🧹 Clear Chat"):
     st.session_state.messages = [
         {"role": "assistant", "content": "Chat cleared! Hello again, I'm Biovyn AI 💚"}
     ]
-    st.srerun()
+    st.rerun()  # ✅ fixed typo (was srerun)
 
+# --- FOOTER ---
 st.markdown(
     """
     <div class='footer'>
