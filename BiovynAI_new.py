@@ -124,7 +124,7 @@ st.markdown("<h3>Your Intelligent Biology Companion</h3>", unsafe_allow_html=Tru
 # --- MEMORY ---
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Hello Gunjan! I'm Biovyn AI — your biology companion 💚"}
+        {"role": "assistant", "content": "Hello ! I'm Biovyn AI — your biology companion 💚"}
     ]
 
 # --- DISPLAY CHAT ---
