@@ -108,10 +108,17 @@ button[kind="secondaryFormSubmit"]:hover {
 
 
 # --- SETUP ---
-st.set_page_config(page_title="Biobot Chat", page_icon="🤖", layout="centered")
+st.set_page_config(page_title="Biobot Chat", page_icon="🤖", layout="centered")    
 import os
-openai.api_key=
-os.getenv("OPENAI_API_KEY")
+import streamlit as st
+import openai
+
+# Load the key from Streamlit Secrets (Cloud) or environment variable (local)
+openai.api_key = st.secrets.get("OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
+
+# Optional: handle missing key
+if not openai.api_key:
+    st.error("⚠️ OpenAI API key not found. Please add it in Streamlit → Settings → Secrets.")
 
 st.markdown("<h1>🌿 Biovyn AI</h1>", unsafe_allow_html=True)
 st.markdown("<h3>Your Intelligent Biology Companion</h3>", unsafe_allow_html=True)
