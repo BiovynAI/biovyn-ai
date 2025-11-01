@@ -178,8 +178,15 @@ if user_input:
     st.session_state.messages.append({"role": "user", "content": user_input})
     reply = get_biovyn_response(user_input, study_mode)
     st.session_state.messages.append({"role": "assistant", "content": reply})
-    st.session_state.input = ""
     st.rerun()
+    
+    # --- Safe Input Reset Fix ---
+if st.sidebar.button("🧹 Clear Chat"):
+    st.session_state["messages"] = []
+    # safely clear the input field
+    if "user_input" in st.session_state:
+        st.session_state["user_input"] = ""
+     st.rerun()
 
 # ─────────────────────────────
 # 🌿 SMART DIAGRAM BUTTON
