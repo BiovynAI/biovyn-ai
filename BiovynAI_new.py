@@ -186,7 +186,7 @@ if st.sidebar.button("🧹 Clear Chat"):
     # safely clear the input field
     if "user_input" in st.session_state:
         st.session_state["user_input"] = ""
-     st.rerun()
+        st.rerun()
 
 # ─────────────────────────────
 # 🌿 SMART DIAGRAM BUTTON
