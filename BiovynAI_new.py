@@ -140,7 +140,7 @@ with col_main:
     if st.button("🗑️ Clear Chat"):
         st.session_state.history = []
         st.session_state.last_visual = None
-        st.experimental_rerun()
+        st.srerun()
 
 with col_main:
     st.subheader("Ask BiovynAI anything about biology 🌿")
@@ -170,7 +170,7 @@ with col_main:
                     with st.spinner("Searching for a helpful diagram..."):
                         img_url = find_wikipedia_image(last_user.split(".")[0])
                         st.session_state.last_visual = img_url or svg_placeholder("No image found")
-                        st.experimental_rerun()
+                        st.rerun()
 
 if submit and user_input.strip():
     st.session_state.history.append({"role": "user", "content": user_input.strip()})
@@ -181,7 +181,7 @@ if submit and user_input.strip():
             st.session_state.history.append({"role": "assistant", "content": reply})
         except Exception as e:
             st.error(f"Error: {e}")
-    st.experimental_rerun()
+    st.rerun()
 
 # -------------------------
 # Footer
