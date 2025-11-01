@@ -151,7 +151,7 @@ with st.container():
     user_input = st.text_input(
         "You:", 
         placeholder="Ask BiovynAI anything about Biology 🧬",
-        key="input",
+        key="user_input",
         disabled=disabled
     )
 
@@ -168,7 +168,8 @@ with st.container():
 # ─────────────────────────────
 if clear_chat:
     st.session_state.messages = []
-    st.session_state.input = ""
+    if "user_input" in st.session_state : 
+             st.session_state["user_input"] = "" 
     st.rerun()
 
 if user_input and not st.session_state.loading:
@@ -178,7 +179,8 @@ if user_input and not st.session_state.loading:
     with st.spinner("Thinking... 🧠"):
         reply = get_biovyn_response(user_input, study_mode)
     st.session_state.messages.append({"role": "assistant", "content": reply})
-    st.session_state.input = ""
+    if "user_input" in st.session_state: 
+              st.session_state["user_input"] = ""  
     st.session_state.loading = False
     st.rerun()
 
