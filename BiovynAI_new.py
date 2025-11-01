@@ -1,5 +1,7 @@
 
 
+
+
 import streamlit as st
 import requests
 from openai import OpenAI
@@ -88,6 +90,16 @@ if "study_mode" not in st.session_state:
 if "loading" not in st.session_state:
     st.session_state.loading = False
 
+if "clear_input_next_run" not in st.session_state:
+    st.session_state.clear_input_next_run = False
+
+# ─────────────────────────────
+# 🧩 SAFE INPUT CLEAR LOGIC
+# ─────────────────────────────
+if st.session_state.get("clear_input_next_run", False):
+    st.session_state["user_input"] = ""
+    st.session_state["clear_input_next_run"] = False
+
 # ─────────────────────────────
 # 🧠 AI RESPONSE FUNCTION
 # ─────────────────────────────
@@ -149,7 +161,7 @@ for msg in st.session_state.messages:
 with st.container():
     disabled = st.session_state.loading
     user_input = st.text_input(
-        "You:", 
+        "You:",
         placeholder="Ask BiovynAI anything about Biology 🧬",
         key="user_input",
         disabled=disabled
@@ -168,19 +180,19 @@ with st.container():
 # ─────────────────────────────
 if clear_chat:
     st.session_state.messages = []
-    if "user_input" in st.session_state : 
-             st.session_state["user_input"] = "" 
+    st.session_state["user_input"] = ""
     st.rerun()
 
 if user_input and not st.session_state.loading:
     st.session_state.loading = True
     st.session_state.study_mode = study_mode
     st.session_state.messages.append({"role": "user", "content": user_input})
+
     with st.spinner("Thinking... 🧠"):
         reply = get_biovyn_response(user_input, study_mode)
+
     st.session_state.messages.append({"role": "assistant", "content": reply})
-    if "user_input" in st.session_state: 
-              st.session_state["user_input"] = ""  
+    st.session_state["clear_input_next_run"] = True
     st.session_state.loading = False
     st.rerun()
 
