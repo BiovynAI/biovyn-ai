@@ -178,7 +178,7 @@ if user_input:
     st.session_state.messages.append({"role": "user", "content": user_input})
     reply = get_biovyn_response(user_input, study_mode)
     st.session_state.messages.append({"role": "assistant", "content": reply})
-    st.rerun()
+    
     
     # --- Safe Input Reset Fix ---
 if st.sidebar.button("🧹 Clear Chat"):
