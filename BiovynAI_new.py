@@ -136,7 +136,7 @@ def generate_bio_diagram(prompt):
             result = client.images.generate(
                 model="gpt-image-1",
                 prompt=image_prompt,
-                size="1024x1024"  # ✅ valid size
+                size="1024x1024"
             )
             image_base64 = result.data[0].b64_json
             if image_base64:
@@ -145,8 +145,8 @@ def generate_bio_diagram(prompt):
                 return
 
         except Exception as e:
-            # Try local Ollama fallback if available
             try:
+                # Try local Ollama fallback
                 resp = requests.post(
                     "http://localhost:11434/api/generate",
                     json={"model": "stable-diffusion", "prompt": f"Labeled biology diagram of {prompt}"}
@@ -158,11 +158,13 @@ def generate_bio_diagram(prompt):
             except Exception:
                 pass
 
-            # Show a placeholder if both fail
+            # Show placeholder image if both fail
             st.warning("Using sample diagram — image generation currently unavailable.")
-            st.image("https://upload.wikimedia.org/wikipedia/commons/3/3a/Animal_Cell.svg",
-                     caption=f"Example Diagram: {prompt}", use_column_width=True)
-
+            st.image(
+                "https://upload.wikimedia.org/wikipedia/commons/3/3a/Animal_Cell.svg",
+                caption="Example Diagram: Animal Cell",
+                use_column_width=True
+            )
 
 
 
