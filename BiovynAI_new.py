@@ -128,23 +128,41 @@ def get_biovyn_response(prompt, study_mode=False):
 # 🔬 DIAGRAM GENERATION FUNCTION
 # ─────────────────────────────
 def generate_bio_diagram(prompt):
-    """Generate a biology-related diagram using OpenAI image API."""
+    """Generate a biology-related diagram using OpenAI → Ollama → Placeholder fallback."""
     with st.spinner("Generating diagram... 🧬"):
         try:
+            # Try OpenAI Image API first
             image_prompt = f"Detailed labeled biology diagram of {prompt}, educational, colorful, clean layout"
             result = client.images.generate(
                 model="gpt-image-1",
                 prompt=image_prompt,
-                size="1024x1024"   # ✅ Fixed size
+                size="1024x1024"  # ✅ valid size
             )
             image_base64 = result.data[0].b64_json
             if image_base64:
                 image_bytes = base64.b64decode(image_base64)
                 st.image(image_bytes, caption=f"Diagram: {prompt}", use_column_width=True)
-            else:
-                st.warning("Hmm... couldn't generate that one 🧩 (no image data returned)")
+                return
+
         except Exception as e:
-            st.error(f"Error while generating diagram: {e}")
+            # Try local Ollama fallback if available
+            try:
+                resp = requests.post(
+                    "http://localhost:11434/api/generate",
+                    json={"model": "stable-diffusion", "prompt": f"Labeled biology diagram of {prompt}"}
+                )
+                if resp.status_code == 200 and "image" in resp.json():
+                    img_data = base64.b64decode(resp.json()["image"])
+                    st.image(img_data, caption=f"Ollama Diagram: {prompt}", use_column_width=True)
+                    return
+            except Exception:
+                pass
+
+            # Show a placeholder if both fail
+            st.warning("Using sample diagram — image generation currently unavailable.")
+            st.image("https://upload.wikimedia.org/wikipedia/commons/3/3a/Animal_Cell.svg",
+                     caption=f"Example Diagram: {prompt}", use_column_width=True)
+
 
 
 
