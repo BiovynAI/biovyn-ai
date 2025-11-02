@@ -142,9 +142,10 @@ def generate_bio_diagram(prompt):
                 image_bytes = base64.b64decode(image_base64)
                 st.image(image_bytes, caption=f"Diagram: {prompt}", use_column_width=False)
             else:
-                st.warning("Hmm... couldn't generate that one 🧩")
-        except Exception:
-            st.warning("Hmm... can't draw that one right now 🧩")
+                st.warning("Hmm... couldn't generate that one 🧩 (no image data returned)")
+        except Exception as e:
+            st.error(f"Error while generating diagram: {e}")
+
 
 # ─────────────────────────────
 # 💬 DISPLAY CHAT
