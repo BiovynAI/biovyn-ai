@@ -135,16 +135,17 @@ def generate_bio_diagram(prompt):
             result = client.images.generate(
                 model="gpt-image-1",
                 prompt=image_prompt,
-                size="512x512"
+                size="1024x1024"   # ✅ Fixed size
             )
             image_base64 = result.data[0].b64_json
             if image_base64:
                 image_bytes = base64.b64decode(image_base64)
-                st.image(image_bytes, caption=f"Diagram: {prompt}", use_column_width=False)
+                st.image(image_bytes, caption=f"Diagram: {prompt}", use_column_width=True)
             else:
                 st.warning("Hmm... couldn't generate that one 🧩 (no image data returned)")
         except Exception as e:
             st.error(f"Error while generating diagram: {e}")
+
 
 
 # ─────────────────────────────
