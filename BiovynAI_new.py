@@ -75,8 +75,8 @@ st.sidebar.markdown("<br><sub>💚 Powered by BiovynAI — Created with love by 
 # ─────────────────────────────
 # 💬 CHAT UI HEADER
 # ─────────────────────────────
-st.markdown("<h2 style='text-align:center;'>BiovynAI 🧬🧠</h2>", unsafe_allow_html=True)
-st.markdown("<p style='text-align:center;'>Ask BiovynAI anything about Biology 🧬</p>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align:center; color:#003366;'>BiovynAI 🧬🧠</h2>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; color:#1a1a1a;'>Ask BiovynAI anything about Biology 🧬</p>", unsafe_allow_html=True)
 
 # ─────────────────────────────
 # 🌱 SESSION STATE SETUP
@@ -196,8 +196,9 @@ if user_input and not st.session_state.loading:
     st.session_state.loading = False
     st.rerun()
 
+
 # ─────────────────────────────
-# 🌿 SMART DIAGRAM BUTTON
+# 🌿 SMART DIAGRAM SUGGESTION + BUTTON (Improved)
 # ─────────────────────────────
 bio_keywords = [
     "cell", "dna", "rna", "photosynthesis", "mitochondria", "nucleus",
@@ -206,13 +207,14 @@ bio_keywords = [
 ]
 
 if st.session_state.messages:
-    last_msg = st.session_state.messages[-1]["content"].lower()
-    if any(word in last_msg for word in bio_keywords):
-        show_diagram_button = True
+    last_msg = st.session_state.messages[-1]["content"]
+    last_msg_lower = last_msg.lower()
 
-if show_diagram_button and not st.session_state.loading:
-    if st.button("🧠 Show Diagram"):
-        generate_bio_diagram(last_msg)
+    if any(word in last_msg_lower for word in bio_keywords):
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("🧠 Show Diagram for Last Topic"):
+            generate_bio_diagram(last_msg)
+
 
 # ─────────────────────────────
 # 💚 FOOTER
