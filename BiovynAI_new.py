@@ -124,14 +124,18 @@ def get_biovyn_response(prompt, study_mode=False):
     )
     return response.choices[0].message.content.strip()
 
+
+
 # ─────────────────────────────
-# 🔬 DIAGRAM GENERATION FUNCTION
+# 🔬 DIAGRAM GENERATION FUNCTION (with reliable placeholder)
 # ─────────────────────────────
+import io
+from PIL import Image
+
 def generate_bio_diagram(prompt):
-    """Generate a biology-related diagram using OpenAI → Ollama → Placeholder fallback."""
+    """Generate a biology diagram using OpenAI or show a reliable placeholder."""
     with st.spinner("Generating diagram... 🧬"):
         try:
-            # Try OpenAI Image API first
             image_prompt = f"Detailed labeled biology diagram of {prompt}, educational, colorful, clean layout"
             result = client.images.generate(
                 model="gpt-image-1",
@@ -143,28 +147,33 @@ def generate_bio_diagram(prompt):
                 image_bytes = base64.b64decode(image_base64)
                 st.image(image_bytes, caption=f"Diagram: {prompt}", use_column_width=True)
                 return
-
         except Exception as e:
-            try:
-                # Try local Ollama fallback
-                resp = requests.post(
-                    "http://localhost:11434/api/generate",
-                    json={"model": "stable-diffusion", "prompt": f"Labeled biology diagram of {prompt}"}
-                )
-                if resp.status_code == 200 and "image" in resp.json():
-                    img_data = base64.b64decode(resp.json()["image"])
-                    st.image(img_data, caption=f"Ollama Diagram: {prompt}", use_column_width=True)
-                    return
-            except Exception:
-                pass
+            st.warning(f"Using sample diagram — image generation currently unavailable.\n\n{e}")
 
-            # Show placeholder image if both fail
-            st.warning("Using sample diagram — image generation currently unavailable.")
-            st.image(
-                "https://upload.wikimedia.org/wikipedia/commons/3/3a/Animal_Cell.svg",
-                caption="Example Diagram: Animal Cell",
-                use_column_width=True
-            )
+        # 📌 Fallback placeholder logic
+        placeholder_map = {
+            "cell": "https://upload.wikimedia.org/wikipedia/commons/3/3f/Animal_cell_structure_en.svg",
+            "dna": "https://upload.wikimedia.org/wikipedia/commons/8/87/DNA_chemical_structure.svg",
+            "photosynthesis": "https://upload.wikimedia.org/wikipedia/commons/3/3e/Photosynthesis_process_diagram_en.svg",
+            "heart": "https://upload.wikimedia.org/wikipedia/commons/5/55/Diagram_of_the_human_heart_%28cropped%29.svg",
+            "brain": "https://upload.wikimedia.org/wikipedia/commons/4/44/Diagram_showing_the_main_parts_of_the_brain_CRUK_188.svg",
+            "neuron": "https://upload.wikimedia.org/wikipedia/commons/b/b5/Neuron.svg",
+            "plant": "https://upload.wikimedia.org/wikipedia/commons/f/f5/Plant_cell_structure-en.svg",
+            "virus": "https://upload.wikimedia.org/wikipedia/commons/7/77/Virus_Structure.svg",
+            "bacteria": "https://upload.wikimedia.org/wikipedia/commons/3/32/Bacterial_cell_structure.svg"
+        }
+
+        # Pick a matching placeholder or default
+        placeholder_url = None
+        for key, url in placeholder_map.items():
+            if key in prompt.lower():
+                placeholder_url = url
+                break
+
+        if not placeholder_url:
+            placeholder_url = "https://upload.wikimedia.org/wikipedia/commons/3/3f/Animal_cell_structure_en.svg"
+
+        st.image(placeholder_url, caption=f"Example Diagram: {prompt}", use_column_width=True)
 
 
 
