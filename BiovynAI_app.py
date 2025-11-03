@@ -2,6 +2,10 @@
 import streamlit as st
 from backend import get_biovyn_response, generate_bio_diagram
 
+st.sidebar.success("✅ Frontend ↔ Backend connection confirmed")
+
+
+
 # ─────────────────────────────
 # 🌿 SETUP
 # ─────────────────────────────
