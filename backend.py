@@ -48,10 +48,11 @@ def get_biovyn_response(prompt, study_mode=False):
 
 
 def generate_bio_diagram(prompt):
-    """Always show a biology diagram — skips OpenAI entirely to avoid billing errors."""
+    """Show biology diagram instantly without OpenAI image generation."""
     with st.spinner("Loading diagram... 🧬"):
+        # ✅ Skip OpenAI image call to avoid billing errors
+        # (We'll re-enable this when billing resets)
 
-        # 🧬 Placeholder map — reliable and educational
         placeholder_map = {
             "cell": "https://upload.wikimedia.org/wikipedia/commons/3/3f/Animal_cell_structure_en.svg",
             "dna": "https://upload.wikimedia.org/wikipedia/commons/8/87/DNA_chemical_structure.svg",
@@ -67,7 +68,6 @@ def generate_bio_diagram(prompt):
             "ecosystem": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Ecosystem_diagram.svg"
         }
 
-        # Match placeholder
         placeholder_url = None
         for key, url in placeholder_map.items():
             if key in prompt.lower():
@@ -77,6 +77,4 @@ def generate_bio_diagram(prompt):
         if not placeholder_url:
             placeholder_url = "https://upload.wikimedia.org/wikipedia/commons/3/3f/Animal_cell_structure_en.svg"
 
-        # ✅ Show placeholder instantly (no OpenAI call)
         st.image(placeholder_url, caption=f"Example Diagram: {prompt}", use_column_width=True)
-
