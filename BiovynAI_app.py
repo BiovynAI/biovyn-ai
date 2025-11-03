@@ -159,6 +159,28 @@ if st.session_state.messages:
             else:
                 st.image(diagram, caption=f"Fallback Diagram: {last_msg}", use_column_width=True)
 
+
+# --- Add export/download chat button (place where you want it in the UI) ---
+def _format_messages_for_export(messages):
+    lines = []
+    for m in messages:
+        role = "You" if m["role"] == "user" else "BiovynAI"
+        lines.append(f"{role}: {m['content']}\n")
+    return "\n".join(lines)
+
+if st.session_state.get("messages"):
+    # Show a small download button to export the current chat
+    chat_text = _format_messages_for_export(st.session_state.messages)
+    st.download_button(
+        label="📥 Download Chat (TXT)",
+        data=chat_text,
+        file_name="biovynai_chat.txt",
+        mime="text/plain"
+    )
+
+
+
+
 # ─────────────────────────────
 # 💚 FOOTER
 # ─────────────────────────────
