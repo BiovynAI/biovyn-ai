@@ -48,41 +48,10 @@ def get_biovyn_response(prompt, study_mode=False):
 
 
 def generate_bio_diagram(prompt):
-    """Always show a valid diagram (never error)."""
-    with st.spinner("Generating diagram... 🧬"):
+    """Always show a biology diagram — skips OpenAI entirely to avoid billing errors."""
+    with st.spinner("Loading diagram... 🧬"):
 
-        # 🧩 Try Ollama local generation first (optional)
-        try:
-            ollama_response = requests.post(
-                OLLAMA_URL,
-                json={"model": "llava:latest", "prompt": f"Generate a simple labeled biology diagram of {prompt}"},
-                timeout=15,
-            )
-            if ollama_response.status_code == 200 and "image" in ollama_response.json():
-                img_data = base64.b64decode(ollama_response.json()["image"])
-                st.image(img_data, caption=f"Diagram: {prompt}", use_column_width=True)
-                return
-        except Exception:
-            pass
-
-        # 🧠 Try OpenAI image generation (if available)
-        if client:
-            try:
-                image_prompt = f"Detailed labeled biology diagram of {prompt}, educational, colorful, clean layout"
-                result = client.images.generate(
-                    model="gpt-image-1",
-                    prompt=image_prompt,
-                    size="1024x1024"
-                )
-                image_base64 = result.data[0].b64_json
-                if image_base64:
-                    image_bytes = base64.b64decode(image_base64)
-                    st.image(image_bytes, caption=f"Diagram: {prompt}", use_column_width=True)
-                    return
-            except Exception:
-                pass
-
-        # 🧬 100% working placeholder fallback
+        # 🧬 Placeholder map — reliable and educational
         placeholder_map = {
             "cell": "https://upload.wikimedia.org/wikipedia/commons/3/3f/Animal_cell_structure_en.svg",
             "dna": "https://upload.wikimedia.org/wikipedia/commons/8/87/DNA_chemical_structure.svg",
@@ -92,9 +61,13 @@ def generate_bio_diagram(prompt):
             "neuron": "https://upload.wikimedia.org/wikipedia/commons/b/b5/Neuron.svg",
             "plant": "https://upload.wikimedia.org/wikipedia/commons/f/f5/Plant_cell_structure-en.svg",
             "virus": "https://upload.wikimedia.org/wikipedia/commons/7/77/Virus_Structure.svg",
-            "bacteria": "https://upload.wikimedia.org/wikipedia/commons/3/32/Bacterial_cell_structure.svg"
+            "bacteria": "https://upload.wikimedia.org/wikipedia/commons/3/32/Bacterial_cell_structure.svg",
+            "mitochondria": "https://upload.wikimedia.org/wikipedia/commons/9/9c/Mitochondrion_structure.svg",
+            "nucleus": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Nucleus_diagram.svg",
+            "ecosystem": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Ecosystem_diagram.svg"
         }
 
+        # Match placeholder
         placeholder_url = None
         for key, url in placeholder_map.items():
             if key in prompt.lower():
@@ -104,4 +77,6 @@ def generate_bio_diagram(prompt):
         if not placeholder_url:
             placeholder_url = "https://upload.wikimedia.org/wikipedia/commons/3/3f/Animal_cell_structure_en.svg"
 
+        # ✅ Show placeholder instantly (no OpenAI call)
         st.image(placeholder_url, caption=f"Example Diagram: {prompt}", use_column_width=True)
+
